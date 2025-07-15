@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Card Details</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="cardDetails">Loading...</div>
+
+  <script>
+    async function loadCardDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const cardId = params.get("id");
+
+      if (!cardId) {
+        document.getElementById('cardDetails').innerText = 'Card ID missing in URL.';
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+        const card = await res.json();
+
+        const image = card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal || '';
+
+        document.getElementById('cardDetails').innerHTML = `
+          <h1>${card.name}</h1>
+          <img src="${image}" alt="${card.name}" width="300" />
+          <p><strong>Set:</strong> ${card.set_name}</p>
+          <p><strong>Commander Legal:</strong> ${card.legalities.commander}</p>
+          <p><strong>Price (USD):</strong> $${card.prices.usd || 'N/A'}</p>
+          <p><strong>Oracle Text:</strong> ${card.oracle_text || 'N/A'}</p>
+          <p><a href="index.html">← Back to search</a></p>
+        `;
+      } catch (error) {
+        console.error(error);
+        document.getElementById('cardDetails').innerText = 'Failed to load card details.';
+      }
+    }
+
+    loadCardDetails();
+  </script>
+</body>
+</html>

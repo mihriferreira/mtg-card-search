@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>MTG Card Search</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magic Card Search</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>MTG Card Search</h1>
-  <input type="text" id="cardName" placeholder="Enter card name" />
-  <button onclick="searchCard()">Search</button>
+  <div id="searchContainer">
+    <h1>MTG Card Search</h1>
+    <input type="text" id="cardName" placeholder="Enter card name" />
+    <button onclick="searchCard()">Search</button>
+  </div>
+
   <div id="cardResult"></div>
 
   <script src="app.js"></script>
