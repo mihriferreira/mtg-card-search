@@ -17,13 +17,14 @@ body {
 
 /* Center Search Area */
 #searchContainer {
-  margin-top: 80px;
+  margin-top: 120px;
   text-align: center;
 }
 
 input[type="text"] {
   padding: 12px;
   width: 300px;
+  margin-top: 20px;
   border-radius: 6px;
   border: none;
   font-size: 1rem;
@@ -65,7 +66,7 @@ button:hover {
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.6);
   transition: transform 0.4s ease;
-  text-align: center;
+  text-align: left;
 }
 
 .card:hover {
@@ -86,18 +87,18 @@ button:hover {
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  text-align: center;
+  text-align: left;
+  font-family: 'Segoe UI', sans-serif;  /* Ensure same font */
 }
 
-#cardDetails img {
-  max-width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-#cardDetails p {
-  margin: 10px 0;
-  color: #ccc;
+#cardDetails h1,
+#cardDetails p,
+#cardDetails .card-info p {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: normal;  /* Standardize font weight */
+  font-style: normal;   /* Prevent italics */
+  color: #eee;          /* Ensure consistent text color */
+  text-align: left;
 }
 
 /* Link Back */
@@ -109,52 +110,4 @@ a {
 a:hover {
   text-decoration: underline;
 }
-/*style for card.html*/
 
-.card-details-box {
-  max-width: 600px;
-  margin: 60px auto;
-  background-color: #1a1a1a;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-  text-align: center;
-}
-
-.card-details-box h1 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #fff;
-}
-
-.card-details-box img {
-  max-width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
-}
-
-.card-details-box .card-info {
-  text-align: left;
-  padding: 0 10px;
-}
-
-.card-details-box .card-info p {
-  margin: 8px 0;
-  font-size: 0.95rem;
-  color: #ccc;
-}
-
-.card-details-box a {
-  display: inline-block;
-  margin-top: 20px;
-  color: #8ab4f8;
-  text-decoration: none;
-}
-
-.card-details-box a:hover {
-  text-decoration: underline;
-}
-#cardDetails {
-  border: 2px solid red !important;
-}
