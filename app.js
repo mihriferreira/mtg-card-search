@@ -21,7 +21,19 @@ async function searchCard() {
           <h3>${card.name}</h3>
           <img src="${image}" alt="${card.name}" width="200" />
           <p><strong>Set:</strong> ${card.set_name}</p>
+          <p><strong>Standard Legal:</strong> ${card.legalities.standard}</p>
+          <p><strong>Pioneer Legal:</strong> ${card.legalities.pioneer}</p>
+          <p><strong>Modern Legal:</strong> ${card.legalities.modern}</p>
+          <p><strong>Legacy Legal:</strong> ${card.legalities.legacy}</p>
+          <p><strong>Vintage Legal:</strong> ${card.legalities.vintage}</p>
           <p><strong>Commander Legal:</strong> ${card.legalities.commander}</p>
+          <p><strong>Oathbreaker Legal:</strong> ${card.legalities.oathbreaker}</p>
+          <p><strong>Alchemy Legal:</strong> ${card.legalities.alchemy}</p>
+          <p><strong>Historic Legal:</strong> ${card.legalities.historic}</p>
+          <p><strong>Brawl Legal:</strong> ${card.legalities.brawl}</p>
+          <p><strong>Timeless Legal:</strong> ${card.legalities.timeless}</p>
+          <p><strong>Pauper Legal:</strong> ${card.legalities.pauper}</p>
+          <p><strong>Penny Legal:</strong> ${card.legalities.penny}</p>
           <p><strong>Price (USD):</strong> $${card.prices.usd || 'N/A'}</p>
         </div>
       `;
