@@ -109,3 +109,52 @@ a {
 a:hover {
   text-decoration: underline;
 }
+/*style for card.html*/
+
+.card-details-box {
+  max-width: 600px;
+  margin: 60px auto;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.card-details-box h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.card-details-box img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+.card-details-box .card-info {
+  text-align: left;
+  padding: 0 10px;
+}
+
+.card-details-box .card-info p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.card-details-box a {
+  display: inline-block;
+  margin-top: 20px;
+  color: #8ab4f8;
+  text-decoration: none;
+}
+
+.card-details-box a:hover {
+  text-decoration: underline;
+}
+#cardDetails {
+  border: 2px solid red !important;
+}
