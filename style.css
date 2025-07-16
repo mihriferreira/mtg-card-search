@@ -139,6 +139,25 @@ button:hover {
   text-align: left;
 }
 
+.legal {
+  color: #4caf50;
+  font-weight: bold;
+  border: 1px solid #4caf50;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.not-legal {
+  color: #f44336;
+  font-weight: bold;
+  border: 1px solid #f44336;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
 /* Link Back */
 a {
   color: #3a86ff;
