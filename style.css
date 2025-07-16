@@ -1,3 +1,26 @@
+#cardDetails .card-details-flex {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.card-image-box {
+  flex: 0 0 auto;
+  max-width: 260px;
+}
+
+.card-image-box img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.card-info-box {
+  flex: 1 1 0%;
+  min-width: 0;
+}
 /* Reset and Base Styles */
 * {
   box-sizing: border-box;
@@ -80,6 +103,21 @@ button:hover {
 }
 
 /* Detail Page */
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background-color: #101010;
+}
+
+#container > div {
+  height: 800px;
+  width: 600px;
+  background-color: #101010;
+  margin: 60px auto;
+  text-align: left;
+}
 #cardDetails {
   background: #1a1a1a;
   max-width: 600px;
