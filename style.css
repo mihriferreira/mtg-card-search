@@ -285,6 +285,35 @@ button:hover {
   background-color: #772f29;
 }
 
+.flipBtn, #detailFlipBtn {
+  position: absolute;
+  top: 175px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(30, 30, 30, 0.6);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+  padding: 0;
+}
+.flipBtn:hover, #detailFlipBtn:hover {
+  background: rgba(58, 134, 255, 0.8);
+}
+.flipBtn svg, #detailFlipBtn svg {
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+.card, .flip-card {
+  position: relative;
+}
+
 /* Link Back */
 a {
   color: #3a86ff;
