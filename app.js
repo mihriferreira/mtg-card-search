@@ -78,18 +78,24 @@ async function loadCardDetails() {
     }).join("");
 
     document.getElementById('cardDetails').innerHTML = `
-      <div class="card-details-box">
-        <h1>${card.name}</h1>
+  <div class="card-details-flex">
+    <div class="card-image-and-legality-box">
+      <div class="card-image-box">
         <img src="${image}" alt="${card.name}" />
-        <div class="card-info">
-          <p><strong>Set:</strong> ${card.set_name}</p>
-          <div class="legalities">${legalityHTML}</div>
-          <p><strong>Price (USD):</strong> $${card.prices.usd || 'N/A'}</p>
-          <p>${(card.oracle_text || 'N/A').replace(/\n/g, '<br>')}</p>
-        </div>
-        <a href="index.html">← Back to search</a>
       </div>
-    `;
+      <div class="card-legality-box">${legalityHTML}</div>
+    </div>
+    <div class="card-info-box">
+      <h1>${card.name}</h1>
+      <p><strong>Set:</strong> ${card.set_name}</p>
+      
+      <p><strong>Price (USD):</strong> $${card.prices.usd || 'N/A'}</p>
+      <p>${(card.oracle_text || 'N/A').replace(/\n/g, '<br>')}</p>
+    
+      <button onclick="history.back()">← Back to search</button>
+    </div>
+  </div>
+`;
   } catch (error) {
     console.error(error);
     document.getElementById('cardDetails').innerText = 'Failed to load card details.';
