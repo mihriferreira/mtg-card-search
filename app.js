@@ -72,10 +72,10 @@ async function loadCardDetails() {
       const isLegal = status === 'legal';
       return `
         <span class="legality-box ${isLegal ? 'legal' : 'not-legal'}">
-          ${isLegal ? 'LEGAL' : 'NOT LEGAL'} – ${format.charAt(0).toUpperCase() + format.slice(1)}
+          ${format.charAt(0).toUpperCase() + format.slice(1)}
         </span>
       `;
-    }).join('<br>');
+    }).join("");
 
     document.getElementById('cardDetails').innerHTML = `
       <div class="card-details-box">
