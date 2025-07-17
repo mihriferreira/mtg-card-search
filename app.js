@@ -1,12 +1,14 @@
 async function searchCard() {
-  const cardName = document.getElementById('cardName').value.trim();
+  const input = document.getElementById('cardName').value.trim(); 
+  const hasQualifier = /[:><=]/.test(input);                      
+  const searchQuery = hasQualifier ? input : `name:"${input}"`;   
+
   const resultDiv = document.getElementById('cardResult');
 
   resultDiv.innerHTML = 'Searching...';
 
   try {
-    // TODO: Limit search to name if no qalifier (":", ">", "<", "=") is present
-    const query = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(cardName)}`
+    const query = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}`;
     console.log("searchCard:", query);
     const res = await fetch(query);
     const data = await res.json();
