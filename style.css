@@ -284,7 +284,7 @@ button:hover {
   color: #101010;
   background-color: #772f29;
 }
-
+/* Flip Button */
 .flipBtn, #detailFlipBtn {
   position: absolute;
   top: 175px;
@@ -313,7 +313,24 @@ button:hover {
 .card, .flip-card {
   position: relative;
 }
+/*Oracle Text */
+.oracle-face {
+  margin-bottom: 18px;
+}
 
+.oracle-face strong {
+  font-size: 1.1em;
+}
+
+.oracle-face em {
+  color: #bdbdbd;
+}
+
+.oracle-text {
+  margin-top: 8px;
+  font-size: 1em;
+  line-height: 1.5;
+}
 /* Link Back */
 a {
   color: #3a86ff;
