@@ -5,7 +5,10 @@ async function searchCard() {
   resultDiv.innerHTML = 'Searching...';
 
   try {
-    const res = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(cardName)}`);
+    // TODO: Limit search to name if no qalifier (":", ">", "<", "=") is present
+    const query = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(cardName)}`
+    console.log("searchCard:", query);
+    const res = await fetch(query);
     const data = await res.json();
 
     if (!data.data || data.data.length === 0) {
@@ -55,8 +58,11 @@ async function loadCardDetails() {
   }
 
   try {
-    const res = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+    const query = `https://api.scryfall.com/cards/${cardId}`;
+    console.log("loadCardDetails:", query);
+    const res = await fetch(query);
     const card = await res.json();
+    console.log(card);
 
     const image = card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal || '';
     const formats = ['standard', 'modern', 'legacy', 'vintage', 'commander', 'pioneer', 'brawl', 'historic'];
