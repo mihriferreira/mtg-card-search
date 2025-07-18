@@ -220,10 +220,12 @@ button:hover {
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
 .card img {
+  transition: transform 0.2s ease-in-out;
   max-width: 100%;
   display: block;
   border-bottom: 1px solid #333;
@@ -331,6 +333,7 @@ button:hover {
   font-size: 1em;
   line-height: 1.5;
 }
+
 /* Link Back */
 a {
   color: #3a86ff;
