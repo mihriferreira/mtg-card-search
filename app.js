@@ -1,7 +1,8 @@
 async function searchCard() {
   const input = document.getElementById('cardName').value.trim(); 
   const hasQualifier = /[:><=]/.test(input);                      
-  const searchQuery = hasQualifier ? input : `name:"${input}"`;   
+  const searchQuery = hasQualifier ? input : `name:"${input}"`; 
+
 
   const resultDiv = document.getElementById('cardResult');
 
