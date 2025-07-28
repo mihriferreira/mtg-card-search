@@ -76,18 +76,25 @@ async function searchCard() {
       }
     }).join('');
 
+    // Initialize pagination after cards are rendered
+    initializePagination();
+
     // Add flip functionality for all double-faced cards
     cardsToShow.forEach((card, idx) => {
       if (card.card_faces && card.card_faces.length === 2) {
         let showingFront = true;
         const btn = document.querySelector(`.flipBtn[data-idx="${idx}"]`);
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          const img = document.getElementById(`cardFaceImg-${idx}`);
-          img.src = card.card_faces[Number(showingFront)].image_uris.normal;
-          img.alt = card.card_faces[Number(showingFront)].name;
-          showingFront = !showingFront;
-        });
+        if (btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const img = document.getElementById(`cardFaceImg-${idx}`);
+            if (img && card.card_faces[Number(showingFront)]?.image_uris?.normal) {
+              img.src = card.card_faces[Number(showingFront)].image_uris.normal;
+              img.alt = card.card_faces[Number(showingFront)].name;
+              showingFront = !showingFront;
+            }
+          });
+        }
       }
     });
   } catch (error) {
@@ -148,7 +155,11 @@ async function loadCardDetails() {
         </div>
       `;
     } else {
-      const image = card.image_uris?.normal || '';
+      const image = card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal;
+      if (!image) {
+        console.warn(`Missing image for card: ${card.name} with layout "${card.layout}" and URL ${image}`);
+        return `<div class="card error">Missing image for ${card.name}</div>`;
+      }
       imageHTML = `<img src="${image}" alt="${card.name}"/>`;
     }
 
@@ -196,7 +207,7 @@ async function loadCardDetails() {
       </div>
     `;
 
-    if (card.card_faces && card.card_faces.length === 2) {
+    if (isDualFace(card)) {
       let showingFront = true;
       document.getElementById('detailFlipBtn').onclick = function() {
         const img = document.getElementById('detailCardFaceImg');
@@ -211,6 +222,10 @@ async function loadCardDetails() {
   }
 }
 
+function isDualFace(card) {
+  return card.card_faces?.length === 2 && !['adventure', 'split'].includes(card.layout);
+}
+
 function generateFlipIcon() {
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw-icon lucide-refresh-cw">
@@ -220,6 +235,19 @@ function generateFlipIcon() {
       <path d="M8 16H3v5"/>
     </svg>
   `;
+}
+
+// Placeholder functions to prevent errors
+function initializePagination() {
+
+}
+
+function goToPreviousPage() {
+
+}
+
+function goToNextPage() {
+
 }
 
 // Only call loadCardDetails if on card.html
