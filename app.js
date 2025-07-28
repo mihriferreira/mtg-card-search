@@ -1,4 +1,5 @@
 async function searchCard() {
+  
   const input = document.getElementById('cardName').value.trim(); 
   const hasQualifier = /[:><=]/.test(input);                      
   const searchQuery = hasQualifier ? input : `name:"${input}"`; 
@@ -12,8 +13,24 @@ async function searchCard() {
     const query = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}`;
     console.log("searchCard:", query);
     const res = await fetch(query);
+    
+    // TODO: Define error message for different HTTP error codes
+    // if (error.message.includes('429')) {
+    //   resultDiv.innerHTML = `<p>Error: Too many requests. Please wait a moment and try again.</p>`;
+    // } else if (error.message.includes('timeout')) {
+    //   resultDiv.innerHTML = `<p>Error: Request timed out. Try searching for fewer cards.</p>`;
+    // } else if (error.message.includes('HTTP error')) {
+    //   resultDiv.innerHTML = `<p>Error: Server responded with ${error.message}.</p>`;
+    // } else {
+    //   resultDiv.innerHTML = `<p>Error: Could not retrieve cards. ${error.message}</p>`;
+    // }
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const data = await res.json();
-
+    console.log("API Response:", data);
+    // TODO: Define error message for empty results
     if (!data.data || data.data.length === 0) {
       resultDiv.innerHTML = `<p>No cards found.</p>`;
       return;
@@ -75,6 +92,12 @@ if (document.getElementById('searchBtn')) {
       }
     });
   }
+
+  // Add pagination event listeners (only on index.html)
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  if (prevBtn) prevBtn.addEventListener('click', goToPreviousPage);
+  if (nextBtn) nextBtn.addEventListener('click', goToNextPage);
 }
 
 //card.html script to display card details
@@ -94,11 +117,17 @@ async function loadCardDetails() {
     const card = await res.json();
     console.log(card);
 
+    // TODO: Improve this code
     let imageHTML = '';
-    if (card.card_faces && card.card_faces.length === 2) {
+    if (isDualFace(card)) {
+      const image = card.card_faces?.[0]?.image_uris?.normal;
+      if (!image) {
+        console.warn(`Missing image for card: ${card.name} with layout "${card.layout}" and URL ${image}`);
+        return `<div class="card error">Missing image for ${card.name}</div>`;
+      }
       imageHTML = `
         <div class="flip-card">
-          <img id="detailCardFaceImg" src="${card.card_faces[0].image_uris.normal}" alt="${card.card_faces[0].name}"/>
+          <img id="detailCardFaceImg" src="${image}" alt="${card.card_faces[0].name}"/>
           <button id="detailFlipBtn" type="button" aria-label="Flip card">${generateFlipIcon()}</button>
         </div>
       `;
@@ -108,7 +137,6 @@ async function loadCardDetails() {
     }
 
     const formats = ['standard', 'modern', 'legacy', 'vintage', 'commander', 'pioneer', 'brawl', 'historic'];
-
     const legalityHTML = formats.map(format => {
       const status = card.legalities[format];
       const isLegal = status === 'legal';
