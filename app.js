@@ -37,23 +37,39 @@ async function searchCard() {
     }
 
     const cardsToShow = data.data;
+    console.log(`Found ${cardsToShow.length} cards`);
+    
     resultDiv.innerHTML = cardsToShow.map((card, idx) => {
-      if (card.card_faces && card.card_faces.length === 2) {
+      if (card.name == null || card.name === '') {
+          console.warn(`Missing name for card: ${card}`);
+          return `<div class="card error">Missing name for card "${card.id}"</div>`;
+      }
+      // TODO: Improve this code
+      if (isDualFace(card)) {
         // Double-faced card: add flip button
+        const image = card.card_faces[0]?.image_uris?.normal;
+        if (!image) {
+          console.warn(`Missing image for card: ${card.name} with layout "${card.layout}" and URL ${image}`);
+          return `<div class="card error">Missing image for ${card.name}</div>`;
+        }
         return `
           <div class="card">
             <a href="card.html?id=${card.id}">
-              <img id="cardFaceImg-${idx}" src="${card.card_faces[0].image_uris.normal}" alt="${card.card_faces[0].name}"/>
+              <img id="cardFaceImg-${idx}" src="${image}" alt="${card.card_faces[0].name}" onerror="this.parentElement.parentElement.innerHTML='<div class=error>Image failed to load</div>'"/>
             </a>
             <button class="flipBtn" data-idx="${idx}" type="button" aria-label="Flip card">${generateFlipIcon()}</button>
           </div>
         `;
       } else {
-        const image = card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal || '';
+        const image = card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal;
+        if (!image) {
+          console.warn(`Missing image for card: ${card.name} with layout "${card.layout}" and URL ${image}`);
+          return `<div class="card error">Missing image for ${card.name}</div>`;
+        }
         return `
           <div class="card">
             <a href="card.html?id=${card.id}">
-              <img src="${image}" alt="${card.name}"/>
+              <img src="${image}" alt="${card.name}" onerror="this.parentElement.parentElement.innerHTML='<div class=error>Image failed to load</div>'"/>
             </a>
           </div>
         `;
