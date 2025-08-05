@@ -4,7 +4,6 @@ async function searchCard() {
   const hasQualifier = /[:><=]/.test(input);                      
   const searchQuery = hasQualifier ? input : `name:"${input}"`; 
 
-
   const resultDiv = document.getElementById('cardResult');
 
   resultDiv.innerHTML = 'Searching...';
@@ -14,23 +13,13 @@ async function searchCard() {
     console.log("searchCard:", query);
     const res = await fetch(query);
     
-    // TODO: Define error message for different HTTP error codes
-    // if (error.message.includes('429')) {
-    //   resultDiv.innerHTML = `<p>Error: Too many requests. Please wait a moment and try again.</p>`;
-    // } else if (error.message.includes('timeout')) {
-    //   resultDiv.innerHTML = `<p>Error: Request timed out. Try searching for fewer cards.</p>`;
-    // } else if (error.message.includes('HTTP error')) {
-    //   resultDiv.innerHTML = `<p>Error: Server responded with ${error.message}.</p>`;
-    // } else {
-    //   resultDiv.innerHTML = `<p>Error: Could not retrieve cards. ${error.message}</p>`;
-    // }
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     
     const data = await res.json();
     console.log("API Response:", data);
-    // TODO: Define error message for empty results
+    
     if (!data.data || data.data.length === 0) {
       resultDiv.innerHTML = `<p>No cards found.</p>`;
       return;
@@ -98,7 +87,16 @@ async function searchCard() {
       }
     });
   } catch (error) {
-    resultDiv.innerHTML = `<p>Error: Could not retrieve cards.</p>`;
+    // Handle different types of errors
+    if (error.message.includes('429')) {
+      resultDiv.innerHTML = `<p>Too many requests. Please wait a moment and try again.</p>`;
+    } else if (error.message.includes('timeout')) {
+      resultDiv.innerHTML = `<p>Request timed out. Try searching for fewer cards.</p>`;
+    } else if (error.message.includes('HTTP error')) {
+      resultDiv.innerHTML = `<p>Server responded with ${error.message}.</p>`;
+    } else {
+      resultDiv.innerHTML = `<p>Could not retrieve cards. ${error.message}</p>`;
+    }
     console.error(error);
   }
 }

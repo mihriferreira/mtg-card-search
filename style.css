@@ -397,3 +397,40 @@ a:hover {
   text-align: center;
   border-radius: 4px;
 }
+
+/* Pagination Styles */
+#pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+  padding: 20px;
+}
+
+#pagination button {
+  padding: 8px 16px;
+  background-color: #3a86ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+#pagination button:hover:not(:disabled) {
+  background-color: #265ecf;
+}
+
+#pagination button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#pageInfo {
+  color: #eee;
+  font-size: 0.9rem;
+  margin: 0 10px;
+}
