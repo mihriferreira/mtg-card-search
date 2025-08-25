@@ -1,68 +1,76 @@
-/* The Background Color */
+/* === Pagination Controls === */
+#paginationControls {
+  display: none; /* Hidden until search results exist */
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto 40px;
+  padding: 15px;
+}
+#paginationControls button {
+  padding: 10px 18px;
+  background-color: #3a86ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s ease-in-out;
+}
+#paginationControls button:hover:not(:disabled) { background-color: #265ecf; }
+#paginationControls button:disabled {
+  background-color: #444; color: #999; cursor: not-allowed; opacity: 0.5;
+}
+#pageIndicator { font-size: 0.95rem; color: #eee; margin: 0 6px; }
+#jumpPage {
+  width: 60px; padding: 6px; border-radius: 5px; border: 1px solid #444;
+  background-color: #222; color: #eee; text-align: center;
+}
+#jumpPage:focus { outline: none; border-color: #3a86ff; }
+
+/* === Base === */
+* { box-sizing: border-box; }
 body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #111;
   color: #eee;
-  /* height: 100vh; */
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100dvh;
+  margin: 0;
 }
 
-/* Center Search Area */
-#searchContainer {
-  margin-top: 120px;
-  text-align: center;
-}
-
+/* === Search === */
+#searchContainer { margin-top: 120px; text-align: center; }
+#searchContainer h1 { margin: 0 0 10px; }
 input[type="text"] {
-  padding: 12px;
-  width: 300px;
-  margin-top: 20px;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
-  background-color: #222;
-  color: #eee;
-  border: 1px solid #444;
+  padding: 12px; width: 300px; margin-top: 20px; border-radius: 6px;
+  border: 1px solid #444; font-size: 1rem; background-color: #222; color: #eee;
 }
-
 button {
-  padding: 12px 18px;
-  background-color: #3a86ff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-left: 10px;
+  padding: 12px 18px; background-color: #3a86ff; color: white;
+  border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-left: 10px;
 }
+button:hover { background-color: #265ecf; }
 
-button:hover {
-  background-color: #265ecf;
-}
-
-/* Card Grid, displays search result as 4 cards per row */
+/* === Results Grid (4 per row) === */
 #cardResult {
   display: grid;
   grid-template-columns: repeat(4, auto);
   gap: 24px;
-  padding: 40px;
+  padding: 40px 20px;
   width: 100%;
   max-width: 1200px;
 }
 #cardResult:has(.card:only-child) {
-  grid-template-columns: 1fr;
-  justify-items: center;
+  grid-template-columns: 1fr; justify-items: center;
 }
 #cardResult:has(.card:first-child:nth-last-child(2)) {
-  grid-template-columns: 1fr 1fr;
-  justify-items: center;
-
+  grid-template-columns: 1fr 1fr; justify-items: center;
 }
 #cardResult:has(.card:first-child:nth-last-child(3)) {
-  grid-template-columns: 1fr 1fr 1fr;
-  justify-items: center;
+  grid-template-columns: 1fr 1fr 1fr; justify-items: center;
 }
 #cardResult .card:only-child,
 #cardResult:has(.card:first-child:nth-last-child(2)) .card,
@@ -70,367 +78,101 @@ button:hover {
   width: 300px;
 }
 
-/* Card Style, adjusts the card size upon search */
+/* === Card Tile === */
 .card {
   background: #1a1a1a;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.6);
-  transition: transform 0.4s ease;
+  transition: transform 0.2s ease;
   text-align: left;
+  position: relative; /* for flip button overlay */
 }
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
+.card:hover { transform: translateY(-5px); }
 .card img {
-  max-width: 100%;
-  display: block;
-  border-bottom: 1px solid #333;
+  display: block; max-width: 100%; border-bottom: 1px solid #333;
 }
 
-/* Detail Page */
-#container {
-  display: flex;
-  justify-content: center;
-  background-color: #101010;
-}
-
-
-#cardDetails .card-details-flex {
-  display: flex;
-  gap: 32px;
-  /* align-items: flex-start; */
-  max-width: 700px;
-  margin-top: 10%;
-}
-
-.card-image-and-legality-box {
-  flex: 0 0 auto;
-  width: 300px;
-}
-
-.card-image-box img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-
-.card-legality-box {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: auto auto;
-  row-gap: 8px;
-  justify-items: center;
-}
-
-.card-info-box {
-  flex: 1 1 0%;
-  min-width: 0;
-}
-
-.legal, .not-legal {
-  font-weight: bold;
-  padding: 4px;
-  border-radius: 4px;
-  width : 100px;
-  text-align: center;
-}
-.legal {
-  color: #101010;
-  background-color: #5d915e;
-}
-.not-legal {
-  color: #101010;
-  background-color: #772f29;
-}
-
-/* Link Back */
-a {
-  color: #3a86ff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-/* The Background Color */
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #111;
-  color: #eee;
-  /* height: 100vh; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Center Search Area */
-#searchContainer {
-  margin-top: 120px;
-  text-align: center;
-}
-
-input[type="text"] {
-  padding: 12px;
-  width: 300px;
-  margin-top: 20px;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
-  background-color: #222;
-  color: #eee;
-  border: 1px solid #444;
-}
-
-button {
-  padding: 12px 18px;
-  background-color: #3a86ff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-left: 10px;
-}
-
-button:hover {
-  background-color: #265ecf;
-}
-
-/* Card Grid, displays search result as 4 cards per row */
-#cardResult {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 24px;
-  padding: 40px;
-  width: 100%;
-  max-width: 1200px;
-}
-
-/* Card Style, adjusts the card size upon search */
-.card {
-  background: #1a1a1a;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
-  transition: transform 0.4s ease;
-  text-align: left;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  cursor: pointer;
-}
-
-.card img {
-  transition: transform 0.2s ease-in-out;
-  max-width: 100%;
-  display: block;
-  border-bottom: 1px solid #333;
-}
-
-/* Detail Page */
-#container {
-  display: flex;
-  justify-content: center;
-  background-color: #101010;
-}
-
-
-#cardDetails .card-details-flex {
-  display: flex;
-  gap: 32px;
-  /* align-items: flex-start; */
-  max-width: 700px;
-  margin-top: 10%;
-}
-
-.card-image-and-legality-box {
-  flex: 0 0 auto;
-  width: 300px;
-}
-
-.card-image-box img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-
-.card-legality-box {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: auto auto;
-  row-gap: 8px;
-  justify-items: center;
-}
-
-.card-info-box {
-  flex: 1 1 0%;
-  min-width: 0;
-}
-
-.legal, .not-legal {
-  font-weight: bold;
-  padding: 4px;
-  border-radius: 4px;
-  width : 100px;
-  text-align: center;
-}
-.legal {
-  color: #101010;
-  background-color: #5d915e;
-}
-.not-legal {
-  color: #101010;
-  background-color: #772f29;
-}
-/* Flip Button */
+/* === Flip Button === */
 .flipBtn, #detailFlipBtn {
   position: absolute;
-  top: 175px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
+  top: 175px; right: 12px;
+  width: 36px; height: 36px;
   background: rgba(30, 30, 30, 0.6);
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  transition: background 0.2s;
-  padding: 0;
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 2; transition: background 0.2s; padding: 0;
 }
-.flipBtn:hover, #detailFlipBtn:hover {
-  background: rgba(58, 134, 255, 0.8);
+.flipBtn:hover, #detailFlipBtn:hover { background: rgba(58, 134, 255, 0.8); }
+.flipBtn svg, #detailFlipBtn svg { width: 24px; height: 24px; pointer-events: none; }
+.flip-card { position: relative; }
+
+/* === Details Page Layout === */
+#container { display: flex; justify-content: center; width: 100%; background-color: #101010; }
+#cardDetails .card-details-flex {
+  display: flex; gap: 32px; max-width: 900px; width: 100%; padding: 40px 20px;
 }
-.flipBtn svg, #detailFlipBtn svg {
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
+.card-image-and-legality-box { flex: 0 0 auto; width: 320px; }
+.card-image-box img {
+  width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
-.card, .flip-card {
-  position: relative;
+.card-legality-box {
+  margin-top: 10px; 
+  display: grid; 
+  grid-template-columns: auto auto; 
+  row-gap: 8px; 
+  justify-items: center;
 }
-/*Oracle Text */
-.oracle-face {
-  margin-bottom: 18px;
+.card-info-box { flex: 1 1 0%; min-width: 0; }
+.card-info-box h1 { margin: 0 0 10px; font-size: 24px; line-height: 1.25; }
+
+/* === Mana Symbols (sizes kept modest) === */
+.mana-symbol {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+  margin: 0 1px;
+}
+.card-info-box .mana-symbol { /* slightly larger in the "Mana Cost" line */
+  width: 18px; height: 18px; vertical-align: text-bottom;
+}
+.oracle-text .mana-symbol { /* a touch smaller within rules text flow */
+  width: 15px; height: 15px; vertical-align: text-bottom;
 }
 
-.oracle-face strong {
-  font-size: 1.1em;
-}
+/* === Oracle text === */
+.oracle-face { margin-bottom: 18px; }
+.oracle-face strong { font-size: 1.1em; }
+.oracle-face em { color: #bdbdbd; }
+.oracle-text { margin-top: 8px; font-size: 1em; line-height: 1.5; }
 
-.oracle-face em {
-  color: #bdbdbd;
+/* === Legality chips === */
+.legal, .not-legal {
+  font-weight: bold; padding: 4px; border-radius: 4px; width: 100px; text-align: center;
 }
+.legal { color: #101010; background-color: #5d915e; }
+.not-legal { color: #101010; background-color: #772f29; }
 
-.oracle-text {
-  margin-top: 8px;
-  font-size: 1em;
-  line-height: 1.5;
-}
+/* === Links === */
+a { color: #3a86ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-/* Link Back */
-a {
-  color: #3a86ff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Pagination Styles */
-#pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  margin: 20px 0;
-  padding: 20px;
-}
-
-#pagination button {
-  padding: 8px 16px;
-  background-color: #3a86ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-#pagination button:hover:not(:disabled) {
-  background-color: #265ecf;
-}
-
-#pagination button:disabled {
-  background-color: #555;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-#pageInfo {
-  color: #eee;
-  font-size: 0.9rem;
-  margin: 0 10px;
-}
-
-/* Error states */
+/* === Errors === */
 .card.error {
-  background-color: #2d1b1b;
-  color: #ff6b6b;
-  padding: 20px;
-  text-align: center;
-  border: 1px solid #ff6b6b;
+  background-color: #2d1b1b; color: #ff6b6b; padding: 20px; text-align: center; border: 1px solid #ff6b6b;
+}
+.error { background-color: #2d1b1b; color: #ff6b6b; padding: 10px; text-align: center; border-radius: 4px; }
+.error-message {
+  color: #ff6b6b; font-weight: bold; text-align: center; padding: 15px;
+  border: 1px solid #ff6b6b; border-radius: 6px; background-color: rgba(45, 27, 27, 0.6);
 }
 
-.error {
-  background-color: #2d1b1b;
-  color: #ff6b6b;
-  padding: 10px;
-  text-align: center;
-  border-radius: 4px;
+/* === Responsive tweak === */
+@media (max-width: 900px) {
+  #cardResult { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #cardDetails .card-details-flex { flex-direction: column; align-items: center; }
+  .card-image-and-legality-box { width: 300px; }
 }
-
-/* Pagination Styles */
-#pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  margin: 20px 0;
-  padding: 20px;
-}
-
-#pagination button {
-  padding: 8px 16px;
-  background-color: #3a86ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-#pagination button:hover:not(:disabled) {
-  background-color: #265ecf;
-}
-
-#pagination button:disabled {
-  background-color: #555;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-#pageInfo {
-  color: #eee;
-  font-size: 0.9rem;
-  margin: 0 10px;
+@media (max-width: 520px) {
+  #cardResult { grid-template-columns: 1fr; }
 }
