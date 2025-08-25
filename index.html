@@ -7,18 +7,25 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Search bar -->
   <div id="searchContainer">
     <h1>MTG Card Search</h1>
-    <input type="text" id="cardName" placeholder="Enter card name" />
-    <button id="searchBtn">Search</button>
+    <div class="search-box">
+      <input type="text" id="cardName" placeholder="Enter card name" />
+      <button id="searchBtn">Search</button>
+    </div>
   </div>
 
-  <div id="cardResult"></div>
+  <!-- Search results -->
+  <div id="cardResult" class="results-container"></div>
 
-  <div id="pagination" style="display: none;">
-    <button id="prevBtn">Previous</button>
-    <span id="pageInfo">Page 1 of 1</span>
-    <button id="nextBtn">Next</button>
+  <!-- Pagination controls -->
+  <div id="paginationControls">
+    <button id="prevBtn" disabled>Previous</button>
+    <span id="pageIndicator">Page 1 of 1</span>
+    <button id="nextBtn" disabled>Next</button>
+    <input id="jumpPage" type="number" min="1" placeholder="Jump to" />
+    <button id="jumpBtn">Go</button>
   </div>
 
   <script src="app.js"></script>
