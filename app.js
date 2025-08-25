@@ -1,45 +1,96 @@
+// === Global state ===
+let currentQuery = "";
+let allResults = [];
+let currentPage = 1;
+const cardsPerPage = 24;
+
+// Mana symbols map (loaded once from Scryfall)
+let manaSymbolMap = null;
+let manaMapLoading = null;
+
+async function ensureManaMap() {
+  if (manaSymbolMap) return;
+  if (!manaMapLoading) {
+    manaMapLoading = fetch("https://api.scryfall.com/symbology")
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+        return r.json();
+      })
+      .then((js) => {
+        // Map like: "{W}" -> "https://svgs.scryfall.io/card-symbols/w.svg"
+        manaSymbolMap = new Map(js.data.map((s) => [s.symbol, s.svg_uri]));
+      })
+      .catch((err) => {
+        console.error("Failed to load mana symbols", err);
+        manaSymbolMap = new Map();
+      });
+  }
+  return manaMapLoading;
+}
+
+function replaceManaSymbols(text) {
+  if (!text) return "";
+  return text.replace(/\{[^}]+\}/g, (sym) => {
+    const uri = manaSymbolMap && manaSymbolMap.get(sym);
+    return uri ? `<img src="${uri}" alt="${sym}" class="mana-symbol">` : sym;
+  });
+}
+
+// === Search ===
 async function searchCard() {
-  
-  const input = document.getElementById('cardName').value.trim(); 
-  const hasQualifier = /[:><=]/.test(input);                      
-  const searchQuery = hasQualifier ? input : `name:"${input}"`; 
+  const input = document.getElementById("cardName").value.trim();
+  const hasQualifier = /[:><=]/.test(input);
+  const searchQuery = hasQualifier ? input : `name:"${input}"`;
+  const resultDiv = document.getElementById("cardResult");
+  const paginationControls = document.getElementById("paginationControls");
 
-  const resultDiv = document.getElementById('cardResult');
-
-  resultDiv.innerHTML = 'Searching...';
+  resultDiv.innerHTML = "Searching...";
+  if (paginationControls) paginationControls.style.display = "none";
 
   try {
-    const query = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}`;
+    const query = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
+      searchQuery
+    )}&unique=cards`;
     const res = await fetch(query);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
     const data = await res.json();
     if (!data.data || data.data.length === 0) {
-      resultDiv.innerHTML = '<p>No cards found.</p>';
+      resultDiv.innerHTML = `<p class="error">No cards found.</p>`;
       return;
     }
 
-    const cardsToShow = data.data;
-    resultDiv.innerHTML = cardsToShow.map(renderCard).join('');
+    currentQuery = searchQuery;
+    allResults = data.data;
+    currentPage = 1;
+    const jp = document.getElementById("jumpPage");
+    if (jp) jp.value = "";
 
-    initializePagination();
-    setupSearchFlipButtons(cardsToShow);
+    renderCurrentPage();
+
+    if (paginationControls) paginationControls.style.display = "flex";
   } catch (error) {
     displayErrorMessage(error, resultDiv);
   }
 }
 
+// === Card details ===
 async function loadCardDetails() {
   const params = new URLSearchParams(window.location.search);
   const cardId = params.get("id");
-  const cardDetailsDiv = document.getElementById('cardDetails');
+  const cardDetailsDiv = document.getElementById("cardDetails");
 
   if (!cardId) {
-    cardDetailsDiv.innerText = 'Card ID missing in URL.';
+    cardDetailsDiv.innerHTML = `
+      <p class="error">❌ No card ID found. Please go back and select a card again.</p>
+    `;
     return;
   }
 
   try {
+    // Ensure mana map so we can render symbols
+    await ensureManaMap();
+
     const query = `https://api.scryfall.com/cards/${cardId}`;
     const res = await fetch(query);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -53,7 +104,8 @@ async function loadCardDetails() {
 
     const imageHTML = renderDetailImage(card);
     const legalityHTML = renderLegality(card);
-    const oracleHTML = renderOracleText(card);
+    const oracleHTML = renderOracleText(card); // uses replaceManaSymbols inside
+    const manaCostHTML = replaceManaSymbols(card.mana_cost || "");
 
     cardDetailsDiv.innerHTML = `
       <div class="card-details-flex">
@@ -63,6 +115,7 @@ async function loadCardDetails() {
         </div>
         <div class="card-info-box">
           <h1>${card.name}</h1>
+          ${manaCostHTML ? `<p><strong>Mana Cost:</strong> ${manaCostHTML}</p>` : ""}
           <p><strong>Set:</strong> ${card.set_name}</p>
           <p>${oracleHTML}</p>
           <button onclick="history.back()">← Back to search</button>
@@ -72,12 +125,70 @@ async function loadCardDetails() {
 
     if (isDualFace(card)) setupDetailFlip(card);
   } catch (error) {
-    displayErrorMessage(error, cardDetailsDiv);
+    cardDetailsDiv.innerHTML = `
+      <p class="error">❌ Could not load card details.<br>${error.message}</p>
+    `;
+    console.error("Card details error:", error);
   }
 }
 
-// --- Helper functions ---
+// === Paging (client-side 24 per page) ===
+function renderCurrentPage() {
+  const resultDiv = document.getElementById("cardResult");
+  const start = (currentPage - 1) * cardsPerPage;
+  const end = start + cardsPerPage;
 
+  const cardsToShow = allResults.slice(start, end);
+  resultDiv.innerHTML = cardsToShow.map(renderCard).join("");
+
+  setupSearchFlipButtons(cardsToShow);
+  updatePaginationButtons();
+  updatePageIndicator();
+}
+
+function updatePaginationButtons() {
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  if (prevBtn) prevBtn.disabled = currentPage === 1;
+  if (nextBtn) nextBtn.disabled = currentPage === totalPages();
+}
+
+function updatePageIndicator() {
+  const pageIndicator = document.getElementById("pageIndicator");
+  if (pageIndicator) pageIndicator.textContent = `Page ${currentPage} of ${totalPages()}`;
+}
+
+function jumpToPage() {
+  const pageInput = document.getElementById("jumpPage");
+  let targetPage = parseInt(pageInput.value, 10);
+
+  if (isNaN(targetPage) || targetPage < 1 || targetPage > totalPages()) {
+    alert(`Enter a number between 1 and ${totalPages()}`);
+    return;
+    }
+  currentPage = targetPage;
+  renderCurrentPage();
+}
+
+function totalPages() {
+  return Math.ceil(allResults.length / cardsPerPage);
+}
+
+function goToPreviousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderCurrentPage();
+  }
+}
+
+function goToNextPage() {
+  if (currentPage < totalPages()) {
+    currentPage++;
+    renderCurrentPage();
+  }
+}
+
+// === Rendering helpers ===
 function renderCard(card, idx) {
   const image = getCardImage(card);
   if (!card.name || !image) {
@@ -85,7 +196,7 @@ function renderCard(card, idx) {
   }
   const flipBtn = isDualFace(card)
     ? `<button class="flipBtn" data-idx="${idx}" type="button" aria-label="Flip card">${generateFlipIcon()}</button>`
-    : '';
+    : "";
   return `
     <div class="card">
       <a href="card.html?id=${card.id}">
@@ -111,31 +222,39 @@ function renderDetailImage(card) {
 }
 
 function renderOracleText(card) {
+  // ensureManaMap() is awaited in loadCardDetails(), so safe to use here
   if (card.card_faces?.length > 1) {
-    return card.card_faces.map(face => `
+    return card.card_faces
+      .map(
+        (face) => `
       <div class="oracle-face">
         <strong>${face.name}</strong><br>
-        <em>${face.type_line || ''}</em>
-        <div class="oracle-text">${(face.oracle_text || '').replace(/\n/g, '<br>')}</div>
+        <em>${face.type_line || ""}</em>
+        <div class="oracle-text">${replaceManaSymbols(face.oracle_text || "").replace(/\n/g, "<br>")}</div>
       </div>
-    `).join('<hr style="opacity:0.2;">');
+    `
+      )
+      .join('<hr style="opacity:0.2;">'); // this <hr> is HTML, not CSS-in-JS; safe
   } else {
     return `
       <strong>${card.name}</strong><br>
-      <em>${card.type_line || ''}</em>
-      <div class="oracle-text">${(card.oracle_text || 'N/A').replace(/\n/g, '<br>')}</div>
+      <em>${card.type_line || ""}</em>
+      <div class="oracle-text">${replaceManaSymbols(card.oracle_text || "N/A").replace(/\n/g, "<br>")}</div>
     `;
   }
 }
 
 function renderLegality(card) {
-  const formats = ['standard', 'modern', 'legacy', 'vintage', 'commander', 'pioneer', 'brawl', 'historic'];
-  return formats.map(format => {
-    const isLegal = card.legalities?.[format] === 'legal';
-    return `<span class="legality-box ${isLegal ? 'legal' : 'not-legal'}">${capitalize(format)}</span>`;
-  }).join('');
+  const formats = ["standard", "modern", "legacy", "vintage", "commander", "pioneer", "brawl", "historic"];
+  return formats
+    .map((format) => {
+      const isLegal = card.legalities?.[format] === "legal";
+      return `<span class="legality-box ${isLegal ? "legal" : "not-legal"}">${capitalize(format)}</span>`;
+    })
+    .join("");
 }
 
+// === Flip buttons ===
 function setupSearchFlipButtons(cards) {
   cards.forEach((card, idx) => {
     if (!isDualFace(card)) return;
@@ -143,7 +262,7 @@ function setupSearchFlipButtons(cards) {
     const btn = document.querySelector(`.flipBtn[data-idx="${idx}"]`);
     const img = document.getElementById(`cardFaceImg-${idx}`);
     if (btn && img) {
-      btn.addEventListener('click', () => {
+      btn.addEventListener("click", () => {
         const face = card.card_faces[Number(!showingFront)];
         img.src = face.image_uris.normal;
         img.alt = face.name;
@@ -155,8 +274,9 @@ function setupSearchFlipButtons(cards) {
 
 function setupDetailFlip(card) {
   let showingFront = true;
-  const btn = document.getElementById('detailFlipBtn');
-  const img = document.getElementById('detailCardFaceImg');
+  const btn = document.getElementById("detailFlipBtn");
+  const img = document.getElementById("detailCardFaceImg");
+  if (!btn || !img) return;
   btn.onclick = () => {
     const face = card.card_faces[Number(!showingFront)];
     img.src = face.image_uris.normal;
@@ -165,6 +285,7 @@ function setupDetailFlip(card) {
   };
 }
 
+// === Util ===
 function getCardImage(card, faceIndex = 0) {
   return isDualFace(card)
     ? card.card_faces?.[faceIndex]?.image_uris?.normal
@@ -172,22 +293,22 @@ function getCardImage(card, faceIndex = 0) {
 }
 
 function displayErrorMessage(error, container) {
-  let message = '';
-  if (error.message.includes('429')) {
-    message = 'Too many requests. Please wait a moment and try again.';
-  } else if (error.message.includes('timeout')) {
-    message = 'Request timed out. Try searching for fewer cards.';
-  } else if (error.message.includes('HTTP error')) {
+  let message = "";
+  if (error.message.includes("429")) {
+    message = "Too many requests. Please wait a moment and try again.";
+  } else if (error.message.includes("timeout")) {
+    message = "Request timed out. Try searching for fewer cards.";
+  } else if (error.message.includes("HTTP error")) {
     message = `Server responded with ${error.message}.`;
   } else {
     message = `Could not retrieve cards. ${error.message}`;
   }
-  container.innerHTML = `<p>Error: ${message}</p>`;
+  container.innerHTML = `<p class="error">Error: ${message}</p>`;
   console.error(error);
 }
 
 function isDualFace(card) {
-  return card.card_faces?.length === 2 && !['adventure', 'split'].includes(card.layout);
+  return card.card_faces?.length === 2 && !["adventure", "split"].includes(card.layout);
 }
 
 function generateFlipIcon() {
@@ -207,24 +328,23 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function initializePagination() {}
-function goToPreviousPage() {}
-function goToNextPage() {}
-
-if (document.getElementById('searchBtn')) {
-  document.getElementById('searchBtn').addEventListener('click', searchCard);
-  const cardInput = document.getElementById('cardName');
+// === Event listeners / bootstrap ===
+if (document.getElementById("searchBtn")) {
+  document.getElementById("searchBtn").addEventListener("click", searchCard);
+  const cardInput = document.getElementById("cardName");
   if (cardInput) {
-    cardInput.addEventListener('keydown', event => {
-      if (event.key === 'Enter') searchCard();
+    cardInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") searchCard();
     });
   }
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  if (prevBtn) prevBtn.addEventListener('click', goToPreviousPage);
-  if (nextBtn) nextBtn.addEventListener('click', goToNextPage);
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const jumpBtn = document.getElementById("jumpBtn");
+  if (prevBtn) prevBtn.addEventListener("click", goToPreviousPage);
+  if (nextBtn) nextBtn.addEventListener("click", goToNextPage);
+  if (jumpBtn) jumpBtn.addEventListener("click", jumpToPage);
 }
 
-if (document.getElementById('cardDetails')) {
+if (document.getElementById("cardDetails")) {
   loadCardDetails();
 }
